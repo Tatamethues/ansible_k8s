@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/inventory.json": "file:///home/colin/python_project/ansible_k8s/cluster.yaml"
+    },
+    "ansible.python.interpreterPath": "/home/colin/python_project/ansible_k8s/.venv/bin/python"
+}

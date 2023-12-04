@@ -1,0 +1,15 @@
+all:
+  vars:
+    ansible_user: kube
+# control
+control:
+  hosts:
+    192.168.10.30:
+      hostname: control 
+# worker nodes
+nodes:
+  hosts:
+    192.168.10.31:
+      hostname: node01
+    192.168.10.32:
+      hostname: node02

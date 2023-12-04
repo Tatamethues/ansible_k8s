@@ -1,0 +1,20 @@
+- name: Copy SSH key to Servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Copy SSH key
+      ansible.posix.authorized_key:
+        user: kube
+        state: present
+        key: "{{ lookup('file', '/home/colin/.ssh/id_rsa.pub') }}"
+        exclusive: true
+
+- name: Hostname
+  hosts: all
+  become: true
+  tasks:
+    - name: Chaning Hostname
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+        use: systemd
+
