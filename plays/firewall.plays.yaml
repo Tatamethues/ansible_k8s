@@ -1,0 +1,19 @@
+- name: Firewall Control
+  hosts: control
+  become: true
+  tasks:
+    - name: Open Ports
+      ansible.posix.firewalld:
+        service: kube-control-plane-secure
+        permanent: true
+        state: enabled
+
+- name: Firewall Nodes
+  hosts: nodes
+  become: true
+  tasks:
+    - name: Open Ports
+      ansible.posix.firewalld:
+        service: kube-worker
+        permanent: true
+        state: enabled

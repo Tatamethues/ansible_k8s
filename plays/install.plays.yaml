@@ -1,34 +1,34 @@
-# - name: Install Containerd
-#   hosts: all
-#   become: true
-#   tasks:
-#     - name: Install yum-tuils
-#       ansible.builtin.dnf:
-#         name: yum-utils
+- name: Install Containerd
+  hosts: all
+  become: true
+  tasks:
+    - name: Install yum-tuils
+      ansible.builtin.dnf:
+        name: yum-utils
 
-#     - name: Add yum repo
-#       ansible.builtin.command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-#       changed_when: false
+    - name: Add yum repo
+      ansible.builtin.command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+      changed_when: false
 
-#     - name: Install Containerd.io
-#       ansible.builtin.yum:
-#         name: containerd.io
-#         state: present
+    - name: Install Containerd.io
+      ansible.builtin.yum:
+        name: containerd.io
+        state: present
 
-#     - name: Write containerd default config
-#       ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
-#       changed_when: false
+    - name: Write containerd default config
+      ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
+      changed_when: false
 
-#     - name: Configure systemd cgroup driver
-#       ansible.builtin.replace:
-#         path: /etc/containerd/config.toml
-#         regexp: SystemdCgroup = false
-#         replace: SystemdCgroup = true
+    - name: Configure systemd cgroup driver
+      ansible.builtin.replace:
+        path: /etc/containerd/config.toml
+        regexp: SystemdCgroup = false
+        replace: SystemdCgroup = true
 
-#     - name: Restart containerd service
-#       ansible.builtin.systemd_service:
-#         state: reloaded
-#         name: containerd
+    - name: Restart containerd service
+      ansible.builtin.systemd_service:
+        state: reloaded
+        name: containerd
 
 - name: Install K8S
   hosts: all
