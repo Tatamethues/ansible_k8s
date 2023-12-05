@@ -5,7 +5,7 @@ all:
 control:
   hosts:
     192.168.10.30:
-      hostname: control 
+      hostname: control
 # worker nodes
 nodes:
   hosts:

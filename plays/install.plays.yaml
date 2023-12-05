@@ -1,0 +1,64 @@
+# - name: Install Containerd
+#   hosts: all
+#   become: true
+#   tasks:
+#     - name: Install yum-tuils
+#       ansible.builtin.dnf:
+#         name: yum-utils
+
+#     - name: Add yum repo
+#       ansible.builtin.command: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+#       changed_when: false
+
+#     - name: Install Containerd.io
+#       ansible.builtin.yum:
+#         name: containerd.io
+#         state: present
+
+#     - name: Write containerd default config
+#       ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
+#       changed_when: false
+
+#     - name: Configure systemd cgroup driver
+#       ansible.builtin.replace:
+#         path: /etc/containerd/config.toml
+#         regexp: SystemdCgroup = false
+#         replace: SystemdCgroup = true
+
+#     - name: Restart containerd service
+#       ansible.builtin.systemd_service:
+#         state: reloaded
+#         name: containerd
+
+- name: Install K8S
+  hosts: all
+  become: true
+  tasks:
+    - name: Set SELinux to permissive mode
+      ansible.builtin.shell: setenforce 0 && sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+      changed_when: false
+
+    - name: Add kubernetes yum repo
+      ansible.builtin.yum_repository:
+        name: kubernetes
+        description: Kubernetes
+        baseurl: https://pkgs.k8s.io/core:/stable:/v1.28/rpm/
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://pkgs.k8s.io/core:/stable:/v1.28/rpm/repodata/repomd.xml.key
+        exclude: kubelet kubeadm kubectl cri-tools kubernetes-cni
+
+    - name: Install kubelet kubeadm kubectl
+      ansible.builtin.yum:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        disable_excludes: kubernetes
+        state: present
+
+    - name: Enable kubelet
+      ansible.builtin.systemd_service:
+        name: kubelet
+        enabled: true
+        state: started
