@@ -1,15 +1,24 @@
 all:
   vars:
     ansible_user: kube
+
 # control
-control:
+controls:
   hosts:
-    192.168.10.30:
-      hostname: control
+    control:
+      ansible_host: 192.168.10.30
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_ssh_extra_args: -o StrictHostKeyChecking=no
 # worker nodes
 nodes:
   hosts:
-    192.168.10.31:
-      hostname: node01
-    192.168.10.32:
-      hostname: node02
+    node01:
+      ansible_host: 192.168.10.31
+      # hostname: node01
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_ssh_extra_args: -o StrictHostKeyChecking=no
+    node02:
+      ansible_host: 192.168.10.32
+      # hostname: node02
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_ssh_extra_args: -o StrictHostKeyChecking=no

@@ -6,22 +6,66 @@
       ansible.posix.authorized_key:
         user: kube
         state: present
-        key: "{{ lookup('file', '/home/colin/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
         exclusive: true
 
 - name: Hostname
   hosts: all
   become: true
   tasks:
-    - name: Chaning Hostname
-      ansible.builtin.hostname:
-        name: "{{ hostname }}" # hostname defined in inventory
-        use: systemd
-
     - name: Add hosts
       ansible.builtin.blockinfile:
         path: /etc/hosts
         block: |
           {% for host in groups['all'] %}
-          {{ host }} {{ hostvars[host]['hostname'] }}
+          {{ hostvars[host]['ansible_host'] }} {{ host }}
           {% endfor %}
+
+- name: Install firewalld
+  hosts: all
+  become: true
+  tasks:
+    - name: Remove ufw
+      ansible.builtin.apt:
+        name: ufw
+        state: absent
+
+    - name: Install firewalld
+      ansible.builtin.apt:
+        name: firewalld
+        state: present
+
+    - name: Enable firewalld
+      ansible.builtin.systemd_service:
+        name: firewalld
+        state: started
+        enabled: true
+
+- name: Ports open on controls
+  hosts: controls
+  become: true
+  tasks:
+    - name: Open Ports
+      ansible.posix.firewalld:
+        service: kube-control-plane
+        permanent: true
+        immediate: true
+        state: enabled
+
+- name: Ports open on workers
+  hosts: nodes
+  become: true
+  tasks:
+    - name: Open worker ports
+      ansible.posix.firewalld:
+        service: kubelet-worker
+        immediate: true
+        permanent: true
+        state: enabled
+
+    - name: Open api ports
+      ansible.posix.firewalld:
+        service: kube-api
+        immediate: true
+        permanent: true
+        state: enabled
